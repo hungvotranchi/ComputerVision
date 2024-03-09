@@ -30,14 +30,14 @@ def load_fgvc(transform):
     data_path_linux = r"../datasets/fgvc"
     try:
         fgvc = datasets.FGVCAircraft(root=data_path, split = "train", \
-                                download= False, target_transform= transform)
+                                download= False, transform= transform)
         fgvc_val = datasets.FGVCAircraft(root=data_path, split = "val", \
-                                download= False, target_transform= transform)
+                                download= False, transform= transform)
     except:
         fgvc = datasets.FGVCAircraft(root=data_path_linux, split = "train", \
-                                download= False, target_transform= transform)
+                                download= False, transform= transform)
         fgvc_val = datasets.FGVCAircraft(root=data_path_linux, split = "val", \
-                                download= False, target_transform= transform)
+                                download= False, transform= transform)
     return fgvc, fgvc_val
 
 
