@@ -25,6 +25,23 @@ def load_CIFAR10(transform):
                                 download= False, transform= transform)
     return cifar10, cifar10_val
 
+def load_fgvc(transform):
+    data_path = r"..\datasets\fgvc"
+    data_path_linux = r"../datasets/fgvc"
+    try:
+        cifar10 = datasets.FGVCAircraft(root=data_path, split = "train", \
+                                download= False, target_transform= transform)
+        cifar10_val = datasets.FGVCAircraft(root=data_path, split = "val", \
+                                download= False, target_transform= transform)
+    except:
+        cifar10 = datasets.FGVCAircraft(root=data_path_linux, split = "train", \
+                                download= False, target_transform= transform)
+        cifar10_val = datasets.FGVCAircraft(root=data_path_linux, split = "val", \
+                                download= False, target_transform= transform)
+    return cifar10, cifar10_val
+
+
+
 
 class ImageNetKaggle(Dataset):
     def __init__(self, root, split, transform=None):
