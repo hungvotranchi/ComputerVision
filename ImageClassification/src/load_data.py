@@ -8,8 +8,15 @@ transform = transforms.Compose(
 
 def load_CIFAR10(transform):
     data_path = r"..\datasets\CIFAR10"
-    cifar10 = datasets.CIFAR10(root=data_path, train = True, \
-                               download= False, transform= transform)
-    cifar10_val = datasets.CIFAR10(root=data_path, train = False, \
-                               download= False, transform= transform)
+    data_path_linux = r"../datasets/CIFAR10"
+    try:
+        cifar10 = datasets.CIFAR10(root=data_path, train = True, \
+                                download= False, transform= transform)
+        cifar10_val = datasets.CIFAR10(root=data_path, train = False, \
+                                download= False, transform= transform)
+    except:
+        cifar10 = datasets.CIFAR10(root=data_path_linux, train = True, \
+                                download= False, transform= transform)
+        cifar10_val = datasets.CIFAR10(root=data_path_linux, train = False, \
+                                download= False, transform= transform)
     return cifar10, cifar10_val
