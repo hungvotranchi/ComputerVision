@@ -6,7 +6,7 @@ from torchvision import datasets
 from src.preprocess import transform_CIFAR10
 from torchvision.transforms import transforms
 
-transform = transforms.Compose(
+transform_sub = transforms.Compose(
     [transforms.ToTensor(),
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
@@ -29,16 +29,16 @@ def load_fgvc(transform):
     data_path = r"..\datasets\fgvc"
     data_path_linux = r"../datasets/fgvc"
     try:
-        cifar10 = datasets.FGVCAircraft(root=data_path, split = "train", \
+        fgvc = datasets.FGVCAircraft(root=data_path, split = "train", \
                                 download= False, target_transform= transform)
-        cifar10_val = datasets.FGVCAircraft(root=data_path, split = "val", \
+        fgvc_val = datasets.FGVCAircraft(root=data_path, split = "val", \
                                 download= False, target_transform= transform)
     except:
-        cifar10 = datasets.FGVCAircraft(root=data_path_linux, split = "train", \
+        fgvc = datasets.FGVCAircraft(root=data_path_linux, split = "train", \
                                 download= False, target_transform= transform)
-        cifar10_val = datasets.FGVCAircraft(root=data_path_linux, split = "val", \
+        fgvc_val = datasets.FGVCAircraft(root=data_path_linux, split = "val", \
                                 download= False, target_transform= transform)
-    return cifar10, cifar10_val
+    return fgvc, fgvc_val
 
 
 
