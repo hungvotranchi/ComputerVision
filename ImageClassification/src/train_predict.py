@@ -29,6 +29,7 @@ def train(num_loops: int, criterion: nn, optim: optim, model: nn.Module, \
             if i % 200 == 199:    # print every 200 mini-batches
                 print(f'[{epoch + 1}, {i + 1:5d}] loss: {run_loss / 2000:.3f}')
                 run_loss = 0.0
+            del inputs, labels
     torch.save(model.state_dict(), path)
     print("Finished Training")
 
