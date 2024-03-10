@@ -17,7 +17,7 @@ class ResidualBlock(nn.Module):
         self.bn2 = nn.BatchNorm2d(num_features= out_channels)
         self.downsample = nn.Sequential()
         if stride != 1 or in_channels != out_channels:
-            self.shortcut = nn.Sequential(
+            self.downsample = nn.Sequential(
                 nn.Conv2d(in_channels= in_channels, out_channels= out_channels, kernel_size= 1,stride= stride),
                 nn.BatchNorm2d(num_features= out_channels)
             )
@@ -43,7 +43,7 @@ class Bottleneck(nn.Module):
         self.bn3 = nn.BatchNorm2d(num_features= out_channels * self.expansion)
         self.downsample = nn.Sequential()
         if stride != 1 or in_channels != out_channels:
-            self.shortcut = nn.Sequential(
+            self.downsample = nn.Sequential(
                 nn.Conv2d(in_channels= in_channels, out_channels= out_channels * self.expansion, kernel_size= 1,stride= stride, bias= False),
                 nn.BatchNorm2d(num_features= out_channels)
             )
