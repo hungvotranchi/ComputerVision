@@ -24,8 +24,8 @@ class ResidualBlock(nn.Module):
 
     def forward(self, X):
         residual = self.downsample(X)
-        out_cnn = self.bn1(self.conv1(X))
-        out_cnn = self.bn2(self.conv2(out_cnn))
+        out_cnn = nn.functional.relu(self.bn1(self.conv1(X)))
+        out_cnn = nn.functional.relu(self.bn2(self.conv2(out_cnn)))
         return nn.functional.relu(residual + out_cnn)
     
 
@@ -42,7 +42,7 @@ class Bottleneck(nn.Module):
         self.conv3 = nn.Conv2d(in_channels= out_channels, out_channels= out_channels*self.expansion, kernel_size= 1, bias= False)
         self.bn3 = nn.BatchNorm2d(num_features= out_channels * self.expansion)
         self.downsample = nn.Sequential()
-        if stride != 1 or in_channels != out_channels:
+        if stride != 1 or in_channels != out_channels * self.expansion:
             self.downsample = nn.Sequential(
                 nn.Conv2d(in_channels= in_channels, out_channels= out_channels * self.expansion, kernel_size= 1,stride= stride, bias= False),
                 nn.BatchNorm2d(num_features= out_channels)
@@ -50,9 +50,9 @@ class Bottleneck(nn.Module):
 
     def forward(self, X):
         residual = self.downsample(X)
-        out_cnn = self.bn1(self.conv1(X))
-        out_cnn = self.bn2(self.conv2(out_cnn))
-        out_cnn = self.bn3(self.conv3(out_cnn))
+        out_cnn = nn.functional.relu(self.bn1(self.conv1(X)))
+        out_cnn = nn.functional.relu(self.bn2(self.conv2(out_cnn)))
+        out_cnn = nn.functional.relu(self.bn3(self.conv3(out_cnn)))
         return nn.functional.relu(residual + out_cnn)
     
 class ResNet(nn.Module):
