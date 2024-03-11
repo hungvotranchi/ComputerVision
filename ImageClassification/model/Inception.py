@@ -49,7 +49,7 @@ class InceptionNet(nn.Module):
     def __init__(self, num_classes):
         super().__init__()
         self.pre_inception = nn.Sequential(
-            nn.Conv2d(in_channels= 3, out_channels= 64, kernel_size= 7, stride= 2),
+            nn.Conv2d(in_channels= 3, out_channels= 64, kernel_size= 7, stride= 2, padding= 3),
             nn.BatchNorm2d(64),
             nn.ReLU(True),
             nn.MaxPool2d(kernel_size= 3, stride= 2, padding= 1),
