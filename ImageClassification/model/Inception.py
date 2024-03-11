@@ -36,7 +36,7 @@ class InceptionBlock(nn.Module):
         )
 
         self.branch_4 = nn.Sequential(
-            nn.MaxPool2d(kernel_size= 3, stride= 2, padding= 1),
+            nn.MaxPool2d(kernel_size= 3, stride= 1, padding= 1),
             nn.Conv2d(in_channels=in_channels, out_channels= pool_prj, kernel_size=1),
             nn.BatchNorm2d(pool_prj),
             nn.ReLU(True)
