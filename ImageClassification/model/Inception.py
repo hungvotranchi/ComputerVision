@@ -3,9 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class InceptionBlock(nn.Module):
-    def __init__(self, in_channels, num1x1, num3x3, num3x3R, num5x5, num5x5R, pool_prj):
+    def __init__(self, in_channels, num1x1, num3x3R, num3x3, num5x5R, num5x5, pool_prj):
         super().__init__()
-    
         #1x1 branch
         self.branch_1 = nn.Sequential(
             nn.Conv2d(in_channels= in_channels, out_channels= num1x1, kernel_size= 1),
@@ -43,6 +42,10 @@ class InceptionBlock(nn.Module):
         )
 
     def forward(self, X):
+        print(self.branch_1(X).shape)
+        print(self.branch_2(X).shape)
+        print(self.branch_3(X).shape)
+        print(self.branch_4(X).shape)
         return torch.cat([self.branch_1(X), self.branch_2(X), self.branch_3(X), self.branch_4(X)], 1)
 
 class InceptionNet(nn.Module):
@@ -53,7 +56,7 @@ class InceptionNet(nn.Module):
             nn.BatchNorm2d(64),
             nn.ReLU(True),
             nn.MaxPool2d(kernel_size= 3, stride= 2, padding= 1),
-            nn.Conv2d(in_channels= 64, out_channels= 192, kernel_size=3, stride= 1),
+            nn.Conv2d(in_channels= 64, out_channels= 192, kernel_size=3, stride= 1, padding = 1),
             nn.BatchNorm2d(192),
             nn.ReLU(True),
             nn.MaxPool2d(kernel_size=3, stride= 2, padding = 1)
