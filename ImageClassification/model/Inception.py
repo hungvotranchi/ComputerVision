@@ -20,7 +20,7 @@ class InceptionBlock(nn.Module):
             nn.ReLU(True),
             nn.Conv2d(in_channels=num3x3R,out_channels= num3x3, kernel_size=3, padding= 1),
             nn.BatchNorm2d(num3x3),
-            nn.ReLU(True),
+            nn.ReLU(True)
 
         )
         
@@ -31,7 +31,7 @@ class InceptionBlock(nn.Module):
             nn.ReLU(True),
             nn.Conv2d(in_channels=num5x5R,out_channels= num5x5, kernel_size=5, padding= 2),
             nn.BatchNorm2d(num5x5),
-            nn.ReLU(True),
+            nn.ReLU(True)
 
         )
 
@@ -39,7 +39,7 @@ class InceptionBlock(nn.Module):
             nn.MaxPool2d(kernel_size= 3, stride= 2, padding= 1),
             nn.Conv2d(in_channels=in_channels, out_channels= pool_prj, kernel_size=1),
             nn.BatchNorm2d(pool_prj),
-            nn.ReLU()
+            nn.ReLU(True)
         )
 
     def forward(self, X):
