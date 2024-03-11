@@ -42,10 +42,6 @@ class InceptionBlock(nn.Module):
         )
 
     def forward(self, X):
-        print(self.branch_1(X).shape)
-        print(self.branch_2(X).shape)
-        print(self.branch_3(X).shape)
-        print(self.branch_4(X).shape)
         return torch.cat([self.branch_1(X), self.branch_2(X), self.branch_3(X), self.branch_4(X)], 1)
 
 class InceptionNet(nn.Module):
