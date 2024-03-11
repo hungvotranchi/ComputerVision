@@ -79,7 +79,9 @@ class InceptionNet(nn.Module):
 
     def forward(self, X):
         X = self.pre_inception(X)
-        X = self.maxpool(self.b3(self.a3(X)))
+        X = self.a3(X)
+        X = self.b3(X)
+        X = self.maxpool(X)
         X = self.maxpool(self.e4(self.d4(self.c4(self.b4(self.a4(X))))))
         X = self.maxpool(self.b5(self.a5(X)))
         X = self.avgpool(X)
