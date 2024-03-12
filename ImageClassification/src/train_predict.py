@@ -1,13 +1,15 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import tqdm
 
 def train(num_loops: int, criterion: nn, optim: optim, model: nn.Module, \
           train_dataloader: torch.utils.data.DataLoader, device: torch.device, \
             path):
     model.train()
-    for epoch in range(num_loops):
+    for epoch in tqdm(range(num_loops)):
         run_loss = 0.0
+        len_batch = 0
         for i, data in enumerate(train_dataloader):
             inputs, labels = data[0].to(device), (data[1].type(torch.LongTensor)).to(device)
 
@@ -26,10 +28,10 @@ def train(num_loops: int, criterion: nn, optim: optim, model: nn.Module, \
             optim.step()
 
             run_loss += loss.item()
-            if i % 100 == 99:    # print every 200 mini-batches
-                print(f'[{epoch + 1}, {i + 1:5d}] loss: {run_loss / 2000:.3f}')
-                run_loss = 0.0
+            len_batch +=1
             del inputs, labels
+        
+        print(f"Epoch: {epoch} | Loss: {run_loss/len_batch}")
     torch.save(model.state_dict(), path)
     print("Finished Training")
 
