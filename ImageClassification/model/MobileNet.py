@@ -2,14 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
-def Conv2D_fw(input_channels, output_channel, stride):
-    return nn.Sequential(
-        nn.Conv2d(in_channels=input_channels, out_channels= output_channel, kernel_size= 3, stride= stride, padding=1),
-        nn.BatchNorm2d(output_channel),
-        nn.ReLU()
-    )
-
 def Conv2D_dw(input_channels, output_channel, stride):
     return nn.Sequential(
         nn.Conv2d(in_channels=input_channels, out_channels= input_channels, kernel_size= 3, \
@@ -24,7 +16,11 @@ def Conv2D_dw(input_channels, output_channel, stride):
 class MobileNet(nn.Module):
     def __init__(self, num_classes):
         super().__init__()
-        self.convfw = Conv2D_fw(input_channels=3, output_channel=32, stride= 2),
+        self.convfw = nn.Sequential(
+            nn.Conv2d(in_channels=3, out_channels= 32, kernel_size= 3, stride= 2, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU()
+        )
         self.convdw = nn.Sequential(
             Conv2D_dw(input_channels=32, output_channel= 64, stride = 1),
             Conv2D_dw(input_channels=64, output_channel=128, stride = 2),
