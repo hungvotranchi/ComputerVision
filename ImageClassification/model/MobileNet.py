@@ -8,10 +8,10 @@ def Conv2D_dw(input_channels, output_channel, stride):
                   stride= stride, padding=1, groups= input_channels),
         nn.BatchNorm2d(input_channels),
         nn.ReLU(),
-        nn.Conv2d(in_channels=input_channels, out_channels= input_channels, kernel_size= 1, \
+        nn.Conv2d(in_channels=input_channels, out_channels= output_channel, kernel_size= 1, \
                   stride= 1),
         nn.BatchNorm2d(output_channel),
-        nn.ReLU(),
+        nn.ReLU()
     )
 class MobileNet(nn.Module):
     def __init__(self, num_classes):
@@ -37,6 +37,7 @@ class MobileNet(nn.Module):
         X = self.convfw(X)
         X = self.convdw(X)
         X = self.avgpool(X)
+        X = torch.flatten(X, 1)
         X = self.fc(X)
         return X
 
