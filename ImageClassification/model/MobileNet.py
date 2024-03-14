@@ -30,7 +30,7 @@ class MobileNet(nn.Module):
             Conv2D_dw(input_channels=512, output_channel=1024, stride = 2),
             Conv2D_dw(input_channels=1024, output_channel=1024, stride = 2),
         )
-        self.avgpool = nn.AdaptiveAvgPool2d(1),
+        self.avgpool = nn.AdaptiveAvgPool2d(1)
         self.fc = nn.Linear(in_features= 1024, out_features= num_classes)
         
     def forward(self, X):
