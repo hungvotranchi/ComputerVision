@@ -14,4 +14,4 @@ def load_COCO(transform, data_path):
                                transform= transform)
     coco_val = datasets.CocoDetection(root=f"{data_path}/val2017/", annFile = f"{data_path}/annotations/instances_val2017.json", \
                                 transform= transform)
-    return coco_val
+    return coco, coco_val
