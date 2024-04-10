@@ -11,7 +11,7 @@ transform_sub = transforms.Compose(
 
 def load_COCO(transform, data_path):
     coco = datasets.CocoDetection(root=f"{data_path}/train2017/", annFile = f"{data_path}/annotations/instances_train2017.json", \
-                                download= False, transform= transform)
+                               transform= transform)
     coco_val = datasets.CocoDetection(root=f"{data_path}/val2017/", annFile = f"{data_path}/annotations/instances_val2017.json", \
-                                download= False, transform= transform)
+                                transform= transform)
     return coco_val
