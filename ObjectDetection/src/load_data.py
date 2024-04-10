@@ -3,7 +3,6 @@ from torch.utils.data import Dataset
 from PIL import Image
 import json
 from torchvision import datasets
-from src.preprocess import transform_CIFAR10
 from torchvision.transforms import transforms
 
 transform_sub = transforms.Compose(
@@ -17,6 +16,6 @@ def load_COCO(transform):
         coco = datasets.CocoDetection(root=data_path, train = True, \
                                 download= True, transform= transform)
     except:
-        coco = datasets.CocoDetectio(root=data_path_linux, train = True, \
+        coco = datasets.CocoDetection(root=data_path_linux, train = True, \
                                 download= False, transform= transform)
     return coco

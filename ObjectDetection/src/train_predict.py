@@ -29,8 +29,6 @@ def train(num_loops: int, criterion: nn, optim: optim, model: nn.Module, \
             # Total loss
             loss = loss_cls + loss_reg
             #output = torch.round(torch.sigmoid(output_logits))
-            #Calculate the loss
-            loss = criterion(output_logits, labels)
             #Compute gradient
             loss.backward()
             #Optimize the parameters based on gradient
