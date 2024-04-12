@@ -2,8 +2,8 @@ import torchvision.transforms.v2 as transforms
 import os
 import sys
 import torch
-from torchvision import datasets
-from torchvision.transforms import v2, tv_tensors
+from torchvision import datasets, tv_tensors
+from torchvision.transforms import v2
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 from plotting import *
 
