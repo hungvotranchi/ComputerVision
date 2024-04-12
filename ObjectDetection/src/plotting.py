@@ -6,7 +6,7 @@ import torch
 from torchvision import datasets
 from torchvision.transforms import transforms
 import sys
-sys.path.append("src")
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 from preprocess import *
 
 

@@ -2,8 +2,7 @@ import torchvision.transforms.v2 as transforms
 import os
 import sys
 import torchvision.datasets as dset
-sys.path.append("src")
-print(os.getcwd())
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 from plotting import *
 
 
