@@ -1,16 +1,34 @@
 import torchvision.transforms.v2 as transforms
 import os
 import sys
-import torchvision.datasets as dset
+import torch
+from torchvision import datasets
+from torchvision.transforms import v2, tv_tensors
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 from plotting import *
 
-transform = transforms.Compose([
-    transforms.Resize((256, 256)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-])
+transform = v2.Compose(
+    [
+        v2.ToImage(),
+        v2.RandomPhotometricDistort(p=1),
+        v2.RandomZoomOut(fill={tv_tensors.Image: (123, 117, 104), "others": 0}),
+        v2.RandomIoUCrop(),
+        v2.RandomHorizontalFlip(p=1),
+        v2.SanitizeBoundingBoxes(),
+        v2.ToDtype(torch.float32, scale=True),
+    ]
+)
+
+
 def load_dataset(TRAIN_IMG_DIR, TRAIN_ANN_FILE):
-    return dset.CocoDetection(root = TRAIN_IMG_DIR, 
+    data =  datasets.CocoDetection(root = TRAIN_IMG_DIR, 
                               annFile = TRAIN_ANN_FILE,
                               transforms = transform)
+    data = datasets.wrap_dataset_for_transforms_v2(data, target_keys=["boxes", "labels", "masks"])
+    return data
+
+def load_datasetNone(TRAIN_IMG_DIR, TRAIN_ANN_FILE):
+    data = datasets.CocoDetection(root = TRAIN_IMG_DIR, 
+                              annFile = TRAIN_ANN_FILE)
+    data = datasets.wrap_dataset_for_transforms_v2(data, target_keys=["boxes", "labels", "masks"])
+    return data
