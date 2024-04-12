@@ -6,7 +6,6 @@ import torch
 from torchvision import datasets
 from torchvision.transforms import transforms
 import sys
-sys.path.append(os.getcwd(),"src")
 from preprocess import *
 
 
