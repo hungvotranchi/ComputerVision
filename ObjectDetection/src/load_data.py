@@ -1,79 +1,65 @@
-import os
-from torch.utils.data import Dataset
-import PIL.Image
-import json
-import torch
-from torchvision import datasets
-from torchvision.transforms import transforms
-from preprocess import *
+import torchvision.transforms.v2 as transforms
+import torchvision.datasets as dset
+from src.plotting import *
 
 
-class RandomHorizontalFlip(object):
-    def __init__(self, p=0.5):
-        self.p = p
-        self.hf = transforms.RandomHorizontalFlip(1)
-        
-    def __call__(self, img, bboxes):
-        
-        if torch.rand(1)[0] < self.p:            
-            img = self.hf.forward(img)
-            bboxes = self.hf.forward(bboxes)
-        
-        return img, bboxes
-    
-    
-class RandomVerticalFlip(object):
-    def __init__(self, p=0.5):
-        self.p = p
-        self.vf = transforms.RandomVerticalFlip(1)
-        
-    def __call__(self, img, bboxes):
-        if torch.rand(1)[0] < self.p:                    
-            img = self.vf.forward(img)
-            bboxes = self.vf.forward(bboxes)
-        
-        return img, bboxes
+def load_dataset(TRAIN_IMG_DIR, TRAIN_ANN_FILE):
+    return dset.CocoDetection(root = TRAIN_IMG_DIR, 
+                              annFile = TRAIN_ANN_FILE)
 
-class Resize(object):
-    def __init__(self, size):
-        self.size = size
-        self.resize = transforms.Resize(self.size, antialias=True)
+class NewCocoDataset(Dataset):    
+    def __init__(self, coco_dataset, image_size=(312, 312)):
+        """
+        Arguments:
+            coco_dataset (dataset): The coco dataset containing all the expected transforms.
+            image_size (tuple): Target image size. Default is (512, 512)
+        """
         
-    def __call__(self, img, bboxes):
-        img = self.resize.forward(img)
+        self.coco_dataset = coco_dataset
+        self.resize = Resize(image_size)
+        self.rhf = RandomHorizontalFlip()
+        self.rvf = RandomVerticalFlip()   
+        self.transformer = transforms.Compose([
+            transforms.ToImageTensor(),
+            transforms.ConvertImageDtype(torch.float32),
+        ])
+
         
-        bboxes = self.resize.forward(bboxes)
-
-        return img, bboxes
+    def __len__(self):
+        return len(self.coco_dataset)
     
-    
-def show(sample):
-    import matplotlib.pyplot as plt
-
-    from torchvision.transforms.v2 import functional as F
-    from torchvision.utils import draw_bounding_boxes
-    
-    resize = Resize((300, 300))
-    
-    rhf = RandomHorizontalFlip()
-    rvf = RandomVerticalFlip()
-    image, target = sample
-    
-    image, bboxes = image,target["boxes"] 
-    
-    image, bboxes = resize(image, bboxes)
-    image, bboxes = rhf(image, bboxes)
-    image, bboxes = rvf(image, bboxes)
-    
-    if isinstance(image, PIL.Image.Image):
-        image = F.to_image_tensor(image)
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
         
-    image = F.convert_dtype(image, torch.uint8)
-    annotated_image = draw_bounding_boxes(image, bboxes, colors="yellow", width=3)
-
-    fig, ax = plt.subplots()
-    ax.imshow(annotated_image.permute(1, 2, 0).numpy())
-    ax.set(xticklabels=[], yticklabels=[], xticks=[], yticks=[])
-    fig.tight_layout()
-
-    fig.show()
+        new_target = {}
+        
+        image, target = self.coco_dataset[idx]
+        
+        if 'boxes' not in target:    
+            new_idx = idx-1
+            _img, _t = self.coco_dataset[new_idx]
+            while 'boxes' not in _t :
+                new_idx -= 1
+                _img, _t = self.coco_dataset[new_idx]
+                
+            image, target = self.coco_dataset[new_idx]
+        
+        
+        image, bboxes = image, target["boxes"] 
+            
+        image, bboxes = self.resize(image, bboxes)
+        image, bboxes = self.rhf(image, bboxes)
+        image, bboxes = self.rvf(image, bboxes)
+        
+        image = self.transformer(image)
+        
+        new_boxes = []
+        for box in bboxes:
+            if box[0] < box[2] and box[1] < box[3]:
+                new_boxes.append(box)
+        
+        new_target["boxes"] = torch.stack(new_boxes)
+        new_target["labels"] = target["labels"]
+    
+        return (image, new_target)
