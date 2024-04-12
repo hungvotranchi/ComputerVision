@@ -3,6 +3,7 @@ import os
 import sys
 import torchvision.datasets as dset
 sys.path.append("src")
+print(os.getcwd())
 from plotting import *
 
 
