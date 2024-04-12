@@ -1,6 +1,6 @@
 import torchvision.transforms.v2 as transforms
 import torchvision.datasets as dset
-from src.plotting import *
+from plotting import *
 
 
 def load_dataset(TRAIN_IMG_DIR, TRAIN_ANN_FILE):
