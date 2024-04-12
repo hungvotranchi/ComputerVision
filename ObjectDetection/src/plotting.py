@@ -1,81 +1,29 @@
-import os
-from torch.utils.data import Dataset
-import PIL.Image
-import json
-import torch
-from torchvision import datasets
-from torchvision.transforms import transforms
-import sys
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-from preprocess import *
+import matplotlib.pyplot as plt
+import torchvision.transforms.functional as F
+def show_images(dataloader, num_images=5):
+    # Get a single batch from the dataloader
+    images, targets = next(iter(dataloader))
+    
+    # This will plot the specified number of images
+    fig, axs = plt.subplots(1, num_images, figsize=(20, 5))
+    
+    for i, (image, target) in enumerate(zip(images, targets)):
+        if i >= num_images:
+            break
+        
+        # Convert the tensor image to PIL for easy handling
+        image = F.to_pil_image(image)
 
-
-class RandomHorizontalFlip(object):
-    def __init__(self, p=0.5):
-        self.p = p
-        self.hf = transforms.RandomHorizontalFlip(1)
+        # Create the subplot for each image
+        ax = axs[i]
+        ax.imshow(image)
+        ax.axis('off')
         
-    def __call__(self, img, bboxes):
+        # Optional: Add bounding boxes and labels to the image
+        for box, label in zip(target['boxes'], target['labels']):
+            xmin, ymin, xmax, ymax = box
+            rect = plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin, fill=False, color='red', linewidth=2)
+            ax.add_patch(rect)
+            ax.text(xmin, ymin, str(label.item()), color='white', fontsize=8, bbox=dict(facecolor='red', alpha=0.5))
         
-        if torch.rand(1)[0] < self.p:            
-            img = self.hf.forward(img)
-            bboxes = self.hf.forward(bboxes)
-        
-        return img, bboxes
-    
-    
-class RandomVerticalFlip(object):
-    def __init__(self, p=0.5):
-        self.p = p
-        self.vf = transforms.RandomVerticalFlip(1)
-        
-    def __call__(self, img, bboxes):
-        if torch.rand(1)[0] < self.p:                    
-            img = self.vf.forward(img)
-            bboxes = self.vf.forward(bboxes)
-        
-        return img, bboxes
-
-class Resize(object):
-    def __init__(self, size):
-        self.size = size
-        self.resize = transforms.Resize(self.size, antialias=True)
-        
-    def __call__(self, img, bboxes):
-        img = self.resize.forward(img)
-        
-        bboxes = self.resize.forward(bboxes)
-
-        return img, bboxes
-    
-    
-def show(sample):
-    import matplotlib.pyplot as plt
-
-    from torchvision.transforms.v2 import functional as F
-    from torchvision.utils import draw_bounding_boxes
-    
-    resize = Resize((300, 300))
-    
-    rhf = RandomHorizontalFlip()
-    rvf = RandomVerticalFlip()
-    image, target = sample
-    
-    image, bboxes = image,target["boxes"] 
-    
-    image, bboxes = resize(image, bboxes).unsqueeze(0)
-    image, bboxes = rhf(image, bboxes)
-    image, bboxes = rvf(image, bboxes)
-    
-    if isinstance(image, PIL.Image.Image):
-        image = F.to_image_tensor(image)
-        
-    image = F.convert_dtype(image, torch.uint8)
-    annotated_image = draw_bounding_boxes(image, bboxes, colors="yellow", width=3)
-
-    fig, ax = plt.subplots()
-    ax.imshow(annotated_image.permute(1, 2, 0).numpy())
-    ax.set(xticklabels=[], yticklabels=[], xticks=[], yticks=[])
-    fig.tight_layout()
-
-    fig.show()
+    plt.show()
