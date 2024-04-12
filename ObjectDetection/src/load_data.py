@@ -1,5 +1,8 @@
 import torchvision.transforms.v2 as transforms
+import os
+import sys
 import torchvision.datasets as dset
+sys.path.append(os.getcwd(),"src")
 from plotting import *
 
 
