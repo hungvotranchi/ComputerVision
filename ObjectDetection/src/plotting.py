@@ -63,7 +63,7 @@ def show(sample):
     
     image, bboxes = image,target["boxes"] 
     
-    image, bboxes = resize(image, bboxes)
+    image, bboxes = resize(image, bboxes).unsqueeze(0)
     image, bboxes = rhf(image, bboxes)
     image, bboxes = rvf(image, bboxes)
     
