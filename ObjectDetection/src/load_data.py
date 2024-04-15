@@ -23,7 +23,7 @@ class NewCocoDataset(Dataset):
         self.rhf = RandomHorizontalFlip()
         self.rvf = RandomVerticalFlip()   
         self.transformer = transforms.Compose([
-            transforms.ToImageTensor(),
+            transforms.PILToTensor(),
             transforms.ConvertImageDtype(torch.float32),
         ])
 
