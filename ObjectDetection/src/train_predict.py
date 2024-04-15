@@ -11,7 +11,7 @@ import gc
 def train(num_loops: int, optim: optim, model: nn.Module, \
           train_dataloader: torch.utils.data.DataLoader, device: torch.device):
     model.train()
-    for epoch in tqdm(range(num_loops)):
+    for epoch in tqdm(range(num_loops), position=0, leave= True):
         running_classifier_loss = 0.0
         running_bbox_loss = 0.0
         running_loss = 0.0
@@ -19,7 +19,7 @@ def train(num_loops: int, optim: optim, model: nn.Module, \
         counter = 0
         model.train()
     
-        for data_point in tqdm(train_dataloader):
+        for data_point in tqdm(train_dataloader, position=0, leave= True):
             _i, _t = data_point[0], data_point[1]
             
             if device != "cuda":
