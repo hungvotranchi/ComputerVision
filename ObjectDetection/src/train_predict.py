@@ -55,7 +55,7 @@ def train(num_loops: int, optim: optim, model: nn.Module, \
                     last_loss = running_loss / 500 # loss per batch
         #             print(f'batch {counter + 1} Classification Loss: {last_classifier_loss}', end='')
         #             print(f', BBox Loss: {last_bbox_loss}')
-                    tepoch.set_postfix(loss = last_loss)
+                    tepoch.set_postfix({"Loss": last_loss})
                     running_classifier_loss = 0.0
                     running_bbox_loss = 0.0
                     running_loss = 0.0
