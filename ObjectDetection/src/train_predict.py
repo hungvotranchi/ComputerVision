@@ -18,7 +18,7 @@ def train(num_loops: int, optim: optim, model: nn.Module, \
     for data_point in tqdm(train_dataloader):
         _i, _t = data_point[0], data_point[1]
         
-        if device != "cpu":
+        if device != "cuda":
             _i = torch.stack(_i)
 
 #         _t = torch.from_numpy(np.asarray(_t))
