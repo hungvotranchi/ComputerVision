@@ -2,71 +2,61 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
+import gc
 
-def train(num_loops: int, criterion: nn, optim: optim, model: nn.Module, \
-          train_dataloader: torch.utils.data.DataLoader, device: torch.device, \
-            path, criterion_cls, criterion_reg):
+def train(num_loops: int, optim: optim, model: nn.Module, \
+          train_dataloader: torch.utils.data.DataLoader, device: torch.device):
     model.train()
     for epoch in tqdm(range(num_loops)):
-        run_loss = 0.0
-        len_batch = 0
-        for images, targets in enumerate(train_dataloader):
-
-            
-            #Zero parameter gradients
-            optim.zero_grad()
-
-            rois = torch.cat([t['boxes'] for t in targets])
-            roi_indices = torch.cat([torch.full_like(t['labels'], i) for i, t in enumerate(targets)])
-            #Forward
-            class_logits, bbox_regressions = model(images, rois, roi_indices)
-            
-            # Assuming targets are properly formatted for each ROI
-            loss_cls = criterion_cls(class_logits, torch.cat([t['labels'] for t in targets]))
-            # Adjust targets['boxes'] as needed to match the predicted format
-            loss_reg = criterion_reg(bbox_regressions, torch.cat([t['boxes'] for t in targets]).float())
+        running_classifier_loss = 0.0
+        running_bbox_loss = 0.0
+        running_loss = 0.0
         
-            # Total loss
-            loss = loss_cls + loss_reg
-            #output = torch.round(torch.sigmoid(output_logits))
-            #Compute gradient
-            loss.backward()
-            #Optimize the parameters based on gradient
-            optim.step()
-
-            run_loss += loss.item()
-            len_batch +=1
-            del inputs, labels
+        counter = 0
+        model.train()
+    
+    for data_point in tqdm(train_dataloader):
+        _i, _t = data_point[0], data_point[1]
         
-        print(f"Epoch: {epoch} | Loss: {run_loss/len_batch}")
-    torch.save(model.state_dict(), path)
-    print("Finished Training")
+        if device != "cuda":
+            _i = torch.stack(_i)
+
+#         _t = torch.from_numpy(np.asarray(_t))
+        
+        _i = _i.to(device)
+        _t = [{k: v.to(device) for k, v in __t.items()} for __t in _t]
+
+        optim.zero_grad()
 
 
-def test_classification(model: nn.Module, test_dataloader: torch.utils.data.DataLoader,
-          device: torch.device, classes):
-    correct = 0
-    total = 0
-    correct_pred = {classname: 0 for classname in classes}
-    total_pred = {classname: 0 for classname in classes}
-    with torch.no_grad():
-        model.to(device)
-        for data in test_dataloader:
-            img, labels = data[0].to(device), data[1].to(device)
+        loss_dict = model(_i, _t)
+        
+#         running_bbox_loss += torch.mean(loss_dict['bbox_regression']).item()
+#         running_classifier_loss += torch.mean(loss_dict['classification']).item()
 
-            outputs = model(img)
-            _, predicts = torch.max(outputs, 1)
-            total +=labels.size(0)
-            correct += (predicts == labels).sum().item()
-            for label, predict in zip(labels, predicts):
-                if label == predict:
-                    correct_pred[classes[label]] += 1
-                total_pred[classes[label]] +=1
-    print(f"Accuracy of the network in the test dataset: {100 * correct // total} %")
+        losses = sum(loss for loss in loss_dict.values())
+    
+        losses.backward()
+        optim.step()
+        
+        running_loss += losses.item()
+        
+        del loss_dict, losses
+        
+        counter += 1
+        
+        if counter % 500 == 499:
+            last_classifier_loss = running_classifier_loss / 500 # loss per batch
+            last_bbox_loss = running_bbox_loss / 500 # loss per batch
+            last_loss = running_loss / 500 # loss per batch
+#             print(f'batch {counter + 1} Classification Loss: {last_classifier_loss}', end='')
+#             print(f', BBox Loss: {last_bbox_loss}')
+            print(f'Epoch {epoch}, Batch {counter + 1}, Running Loss: {last_loss}')
+            running_classifier_loss = 0.0
+            running_bbox_loss = 0.0
+            running_loss = 0.0
+            
+        gc.collect()
 
-    for class_name, correct_count in correct_pred.items():
-        accuracy = 100* float(correct_count) / total_pred[class_name]
-        print(f"Accuracy for class {class_name}: {accuracy}")
-  
 
 
