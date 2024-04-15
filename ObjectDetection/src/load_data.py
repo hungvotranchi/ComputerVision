@@ -1,6 +1,7 @@
 import torchvision.datasets as dset
 import os
 from torch.utils.data import Dataset, DataLoader
+import torchvision.transforms.v2 as transforms
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 from preprocess import *
 
