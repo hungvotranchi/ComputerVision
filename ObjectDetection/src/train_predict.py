@@ -59,39 +59,40 @@ def train(num_loops: int, optim: optim, model: nn.Module, \
                     running_classifier_loss = 0.0
                     running_bbox_loss = 0.0
                     running_loss = 0.0
-            
+                del data_point
         gc.collect()
     gc.collect()
 
 def predict(model: nn.Module, \
           data: tuple, device: torch.device, name_idx: dict):
-    img_dtype_converter = transforms.ConvertImageDtype(torch.uint8)
-    _i = data[0]
+    with torch.no_grad():
+        img_dtype_converter = transforms.ConvertImageDtype(torch.uint8)
 
-    threshold = 0.5
-    idx = 3
+        _i = data[0]
 
-    if device != "cuda":
-        _i = torch.stack(_i)
+        threshold = 0.2
+        idx = 0
 
-    _i = _i.to(device)
-    model.eval()
-    p_t = model(_i)
+        if device != "cuda":
+            _i = torch.stack(_i)
 
-    confidence_length = len(np.argwhere(p_t[idx]['scores'] > threshold)[0])
+        _i = _i.to(device)
+        model.to(device)
+        model.eval()
+        p_t = model(_i)
+        confidence_length = len(torch.nonzero(p_t[idx]['scores'] > threshold)[0])
 
-    p_boxes = p_t[idx]['boxes'][: confidence_length]
-    p_labels = [name_idx[i] for i in p_t[idx]['labels'][: confidence_length].tolist()]
-    i_img = img_dtype_converter(_i[idx])
+        p_boxes = p_t[idx]['boxes'][: confidence_length]
+        p_labels = [name_idx[i] for i in p_t[idx]['labels'][: confidence_length].tolist()]
+        i_img = img_dtype_converter(_i[idx])
 
-    annotated_image = draw_bounding_boxes(i_img, p_boxes, p_labels, colors="yellow", width=3)
-    fig, ax = plt.subplots()
-    ax.imshow(annotated_image.permute(1, 2, 0).numpy())
-    ax.set(xticklabels=[], yticklabels=[], xticks=[], yticks=[])
-    fig.tight_layout()
+        annotated_image = draw_bounding_boxes(i_img, p_boxes, p_labels, colors="yellow", width=3)
+        fig, ax = plt.subplots()
+        ax.imshow(annotated_image.permute(1, 2, 0).numpy())
+        ax.set(xticklabels=[], yticklabels=[], xticks=[], yticks=[])
+        fig.tight_layout()
 
 
-    fig.show()
-
+        fig.show()
 
 
