@@ -61,6 +61,7 @@ def train(num_loops: int, optim: optim, model: nn.Module, \
                     running_loss = 0.0
             
         gc.collect()
+    gc.collect()
 
 def predict(model: nn.Module, \
           data: tuple, device: torch.device, name_idx: dict):
