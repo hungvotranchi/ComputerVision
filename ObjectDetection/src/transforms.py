@@ -6,7 +6,7 @@ from torch import nn, Tensor
 from torchvision import ops
 from torchvision.transforms import functional as F, transforms as T
 from enum import Enum
-from PIL import Image
+
 
 class InterpolationMode(Enum):
     """Interpolation modes
@@ -469,7 +469,7 @@ def _copy_paste(
     paste_image: torch.Tensor,
     paste_target: Dict[str, Tensor],
     blending: bool = True,
-    resize_interpolation: Image.InterpolationMode = Image.InterpolationMode.BILINEAR,
+    resize_interpolation: F.InterpolationMode = F.InterpolationMode.BILINEAR,
 ) -> Tuple[torch.Tensor, Dict[str, Tensor]]:
 
     # Random paste targets selection:
@@ -497,7 +497,7 @@ def _copy_paste(
     size2 = paste_image.shape[-2:]
     if size1 != size2:
         paste_image = F.resize(paste_image, size1, interpolation=resize_interpolation)
-        paste_masks = F.resize(paste_masks, size1, interpolation=Image.InterpolationMode.NEAREST)
+        paste_masks = F.resize(paste_masks, size1, interpolation=F.InterpolationMode.NEAREST)
         # resize bboxes:
         ratios = torch.tensor((size1[1] / size2[1], size1[0] / size2[0]), device=paste_boxes.device)
         paste_boxes = paste_boxes.view(-1, 2, 2).mul(ratios).view(paste_boxes.shape)
@@ -565,7 +565,7 @@ def _copy_paste(
 
 
 class SimpleCopyPaste(torch.nn.Module):
-    def __init__(self, blending=True, resize_interpolation=Image.InterpolationMode.BILINEAR):
+    def __init__(self, blending=True, resize_interpolation=F.InterpolationMode.BILINEAR):
         super().__init__()
         self.resize_interpolation = resize_interpolation
         self.blending = blending
