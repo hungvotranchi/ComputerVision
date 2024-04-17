@@ -4,23 +4,7 @@ import torch
 import torchvision
 from torch import nn, Tensor
 from torchvision import ops
-from torchvision.transforms import functional as F, transforms as T
-from enum import Enum
-
-
-class InterpolationMode(Enum):
-    """Interpolation modes
-    Available interpolation methods are ``nearest``, ``nearest-exact``, ``bilinear``, ``bicubic``, ``box``, ``hamming``,
-    and ``lanczos``.
-    """
-
-    NEAREST = "nearest"
-    NEAREST_EXACT = "nearest-exact"
-    BILINEAR = "bilinear"
-    BICUBIC = "bicubic"
-    # For PIL compatibility
-    BOX = "box"
-    HAMMING = "hamming"
+from torchvision.transforms import functional as F, InterpolationMode, transforms as T
 
 
 def _flip_coco_person_keypoints(kps, width):
