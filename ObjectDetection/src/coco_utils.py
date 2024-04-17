@@ -3,6 +3,8 @@ import os
 import torch
 import torch.utils.data
 import torchvision
+import os
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 import transforms as T
 from pycocotools import mask as coco_mask
 from pycocotools.coco import COCO

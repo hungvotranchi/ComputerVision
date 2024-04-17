@@ -5,6 +5,8 @@ from contextlib import redirect_stdout
 import numpy as np
 import pycocotools.mask as mask_util
 import torch
+import os
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 import utils
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
