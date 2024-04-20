@@ -62,7 +62,9 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq, sc
 
         del images, targets
         gc.collect()
+    torch.cuda.empty_cache()
     gc.collect()
+
     return metric_logger
 
 
@@ -109,8 +111,6 @@ def evaluate(model, data_loader, device):
         evaluator_time = time.time() - evaluator_time
         metric_logger.update(model_time=model_time, evaluator_time=evaluator_time)
 
-        del images, targets
-        gc.collect()
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger)
@@ -122,3 +122,4 @@ def evaluate(model, data_loader, device):
     torch.set_num_threads(n_threads)
     gc.collect()
     return coco_evaluator
+
