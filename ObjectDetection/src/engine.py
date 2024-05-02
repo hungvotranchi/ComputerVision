@@ -62,8 +62,9 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq, sc
 
         del images, targets
         gc.collect()
-    torch.cuda.empty_cache()
+        torch.cuda.empty_cache()
     gc.collect()
+    torch.cuda.empty_cache()
 
     return metric_logger
 
@@ -121,5 +122,7 @@ def evaluate(model, data_loader, device):
     coco_evaluator.summarize()
     torch.set_num_threads(n_threads)
     gc.collect()
+    torch.cuda.empty_cache()
+    
     return coco_evaluator
 
