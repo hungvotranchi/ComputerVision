@@ -48,7 +48,7 @@ class XmlParser(object):
         return np.array(boxes)
     
 
-def xml_files_to_df(xml_files):
+def xml_files_to_df(xml_files, IMG_PATH):
     
     """"Return pandas dataframe from list of XML files."""
     
@@ -58,7 +58,7 @@ def xml_files_to_df(xml_files):
     xml_path = []
     img_path = []
     for file in xml_files:
-        xml = XmlParser(file)
+        xml = XmlParser(file, IMG_PATH)
         names.extend(xml.names)
         boxes.extend(xml.boxes)
         image_id.extend([xml.image_id] * len(xml.names))
